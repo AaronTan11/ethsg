@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/router';
 import {
     connect,
     listenForAccountChanges,
@@ -7,11 +8,23 @@ import {
 
 export default function Home() {
     const [currentAccount, setCurrentAccount] = useState(null);
+    const [error, setError] = useState(null);
+    const router = useRouter();
 
-    const requestAccountAccess = async () => {
-        const account = await connect();
-        setCurrentAccount(account);
-    };
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const account = await connect();
+                setCurrentAccount(account);
+                setError(null); // Clear any previous error messages on success
+                router.push('/wallet');
+            } catch (err) {
+                setError('Please try again. ' + err.message);
+            }
+        }
+
+        fetchData(); // Call the async function within useEffect
+    }, [router]);
 
     useEffect(() => {
         // Retrieve from localStorage on component mount
@@ -38,6 +51,17 @@ export default function Home() {
         }
     }, [currentAccount]);
 
+    const requestAccountAccess = async () => {
+        try {
+            const account = await connect();
+            setCurrentAccount(account);
+            setError(null); // Clear any previous error messages on success
+            router.push('/wallet');
+        } catch (err) {
+            setError('Please try again. ' + err.message);
+        }
+    };
+
     return (
         <>
             <div className="flex justify-center items-center flex-col h-screen space-y-7">
@@ -50,6 +74,7 @@ export default function Home() {
                 <h2>
                     Account: {currentAccount ? currentAccount : "Not Connected"}
                 </h2>
+                {error && <p>Error: {error}</p>}
             </div>
         </>
     );
