@@ -46,8 +46,8 @@ function NavBar() {
 
     return (
         <div>
-            <nav className="w-full bg-slate-200">
-                <div className="justify-between bg-slate-200 px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
+            <nav className="w-full ">
+                <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
                     <div>
                         <div className="flex items-center justify-between py-3 md:py-5 md:block">
                             {/* LOGO */}
@@ -67,7 +67,7 @@ function NavBar() {
                             <ul className="h-screen md:h-auto items-center justify-center md:flex ">
                                 <li className=" text-xl text-black py-2 md:px-6 text-center border-b-2 md:border-b-0  hover:bg-purple-900  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
                                     <Link
-                                        href="/"
+                                        href="/wallet"
                                         onClick={() => setNavbar(!navbar)}
                                     >
                                         Wallet
@@ -75,7 +75,7 @@ function NavBar() {
                                 </li>
                                 <li className=" text-xl text-black py-2 px-6 text-center  border-b-2 md:border-b-0  hover:bg-purple-600  border-purple-900  md:hover:text-purple-600 md:hover:bg-transparent">
                                     <Link
-                                        href="/"
+                                        href="/portfolio"
                                         onClick={() => setNavbar(!navbar)}
                                     >
                                         Portfolio
@@ -85,7 +85,10 @@ function NavBar() {
                         </div>
                     </div>
                     <div>
-                        <Button className="connectButton" onClick={connect}>
+                        <Button
+                            className="connectButton"
+                            onClick={requestAccountAccess}
+                        >
                             {isConnected
                                 ? address.slice(0, 4) +
                                   "..." +
