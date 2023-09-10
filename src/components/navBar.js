@@ -1,11 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { Button } from "@/components/ui/button";
+import {
+    connect,
+    listenForAccountChanges,
+} from "@/metamaskSDK/metamaskFunctions";
 function NavBar() {
     const [navbar, setNavbar] = useState(false);
+    const [currentAccount, setCurrentAccount] = useState(null);
+
+    const requestAccountAccess = async () => {
+        const account = await connect();
+        setCurrentAccount(account);
+    };
+
+    useEffect(() => {
+        // Retrieve from localStorage on component mount
+        const storedAccount = localStorage.getItem("currentAccount");
+        if (storedAccount) {
+            setCurrentAccount(storedAccount);
+        }
+
+        // Listen for account changes
+        const updateCurrentAccount = (newAccount) => {
+            setCurrentAccount(newAccount);
+        };
+
+        listenForAccountChanges(updateCurrentAccount);
+
+        // Optionally: Unsubscribe logic if needed
+        return () => {
+            // Your unsubscribe logic here
+        };
+    }, []);
+
+    useEffect(() => {
+        // Store to localStorage on state change
+        if (currentAccount) {
+            localStorage.setItem("currentAccount", currentAccount);
+        }
+    }, [currentAccount]);
+
+    const isConnected = Boolean(currentAccount);
+    const address = currentAccount;
+
     return (
         <div>
-            <nav className="w-full bg-slate-200 fixed top-0 left-0 right-0 z-10">
+            <nav className="w-full bg-slate-200">
                 <div className="justify-between bg-slate-200 px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
                     <div>
                         <div className="flex items-center justify-between py-3 md:py-5 md:block">
@@ -44,8 +85,13 @@ function NavBar() {
                         </div>
                     </div>
                     <div>
-                        Metamask wallet
-                        {/* <div className='connectButton' onClick={connect}>{isConnected ? (address.slice(0, 4) + "..." + address.slice(38)) : "Connect"}</div> */}
+                        <Button className="connectButton" onClick={connect}>
+                            {isConnected
+                                ? address.slice(0, 4) +
+                                  "..." +
+                                  address.slice(38)
+                                : "Connect"}
+                        </Button>
                     </div>
                 </div>
             </nav>

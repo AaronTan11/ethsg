@@ -5,10 +5,8 @@ import { useEffect } from "react";
 import { MetaMaskSDK } from "@metamask/sdk";
 import {
     initializeSDK,
-    connect,
     listenForAccountChanges,
     listenForChainChanges,
-    eth_signTypedData_v4,
     terminateSDK,
 } from "@/metamaskSDK/metamaskFunctions";
 
