@@ -20,21 +20,44 @@ export default function Home() {
         }
     };
 
+    useEffect(() => {
+        // Retrieve from localStorage on component mount
+        const storedAccount = localStorage.getItem("currentAccount");
+        if (storedAccount) {
+            setCurrentAccount(JSON.parse(storedAccount));
+        }
+    }, []);
+
+    useEffect(() => {
+        // Store to localStorage on state change
+        if (currentAccount) {
+            localStorage.setItem(
+                "currentAccount",
+                JSON.stringify(currentAccount)
+            );
+        }
+    }, [currentAccount]);
+
     return (
         <>
             <div className="flex justify-center items-center flex-col h-screen space-y-7">
                 <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
                     Portfolio Management
                 </h1>
-                <Button
-                    // className="bg-slate-400 px-6 py-3 rounded-md font-semibold"
-                    onClick={requestAccountAccess}
-                >
+                <Button onClick={requestAccountAccess}>
                     Connect to Metamask
                 </Button>
                 <h2>
-                    Account:{" "}
-                    {currentAccount ? currentAccount[0] : "Not Connected"}
+                    Account:
+                    {currentAccount ? (
+                        <ul>
+                            {currentAccount.map((account, index) => (
+                                <li key={index}>{account}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        "Not Connected"
+                    )}
                 </h2>
             </div>
         </>
