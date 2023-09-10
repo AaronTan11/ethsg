@@ -46,8 +46,8 @@ function NavBar() {
 
     return (
         <div>
-            <nav className="w-full">
-                <div className="justify-between bg-slate-100 px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
+            <nav className="w-full ">
+                <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
                     <div>
                         <div className="flex items-center justify-between py-3 md:py-5 md:block">
                             {/* LOGO */}
@@ -85,7 +85,10 @@ function NavBar() {
                         </div>
                     </div>
                     <div>
-                        <Button className="connectButton" onClick={connect}>
+                        <Button
+                            className="connectButton"
+                            onClick={requestAccountAccess}
+                        >
                             {isConnected
                                 ? address.slice(0, 4) +
                                   "..." +
