@@ -1,40 +1,40 @@
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+    connect,
+    listenForAccountChanges,
+} from "@/metamaskSDK/metamaskFunctions";
+
 export default function Home() {
     const [currentAccount, setCurrentAccount] = useState(null);
 
     const requestAccountAccess = async () => {
-        try {
-            const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts",
-            });
-            setCurrentAccount(accounts);
-            console.log(accounts);
-        } catch (err) {
-            if (err.code === 4001) {
-                console.log("Please connect to MetaMask.");
-            } else {
-                console.error(err);
-            }
-        }
+        const account = await connect();
+        setCurrentAccount(account);
     };
 
     useEffect(() => {
         // Retrieve from localStorage on component mount
         const storedAccount = localStorage.getItem("currentAccount");
         if (storedAccount) {
-            setCurrentAccount(JSON.parse(storedAccount));
+            setCurrentAccount(storedAccount);
         }
+
+        // Listen for account changes
+        const unsubscribe = listenForAccountChanges((newAccount) => {
+            setCurrentAccount(newAccount);
+        });
+
+        // Cleanup
+        return () => {
+            unsubscribe && unsubscribe();
+        };
     }, []);
 
     useEffect(() => {
         // Store to localStorage on state change
         if (currentAccount) {
-            localStorage.setItem(
-                "currentAccount",
-                JSON.stringify(currentAccount)
-            );
+            localStorage.setItem("currentAccount", currentAccount);
         }
     }, [currentAccount]);
 
@@ -48,16 +48,7 @@ export default function Home() {
                     Connect to Metamask
                 </Button>
                 <h2>
-                    Account:
-                    {currentAccount ? (
-                        <ul>
-                            {currentAccount.map((account, index) => (
-                                <li key={index}>{account}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        "Not Connected"
-                    )}
+                    Account: {currentAccount ? currentAccount : "Not Connected"}
                 </h2>
             </div>
         </>
