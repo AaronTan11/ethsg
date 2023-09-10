@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
-
+import { Button } from "@/components/ui/button";
 export default function Home() {
     const [currentAccount, setCurrentAccount] = useState(null);
 
@@ -26,12 +26,12 @@ export default function Home() {
                 <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
                     Portfolio Management
                 </h1>
-                <button
-                    className="bg-slate-400 px-6 py-3 rounded-md font-semibold"
+                <Button
+                    // className="bg-slate-400 px-6 py-3 rounded-md font-semibold"
                     onClick={requestAccountAccess}
                 >
                     Connect to Metamask
-                </button>
+                </Button>
                 <h2>
                     Account:{" "}
                     {currentAccount ? currentAccount[0] : "Not Connected"}
