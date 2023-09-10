@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import NavBar from '@/components/navBar'
 import {
@@ -65,7 +66,19 @@ const data = [
   };
 
 export default function Home() {
+    const [currentAccount, setCurrentAccount] = useState(null);
+
+    useEffect(() => {
+        // Retrieve from localStorage on component mount
+        const storedAccount = localStorage.getItem("currentAccount");
+        if (storedAccount) {
+            setCurrentAccount(storedAccount);
+        }
+            
+    }, []);
+
     return (
+        
         <>
             <NavBar />
             <div className="p-10">
@@ -81,7 +94,7 @@ export default function Home() {
                     <div>
                         <p> ENS: </p>
                         <br />
-                        <p> Wallet Address: </p>
+                        <p> Wallet Address: {currentAccount} </p>
                         <br />
                         <p> $122323424234 </p>
                         <br />
