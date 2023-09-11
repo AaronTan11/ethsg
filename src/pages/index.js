@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import {
     connect,
     listenForAccountChanges,
@@ -10,21 +10,6 @@ export default function Home() {
     const [currentAccount, setCurrentAccount] = useState(null);
     const [error, setError] = useState(null);
     const router = useRouter();
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const account = await connect();
-                setCurrentAccount(account);
-                setError(null); // Clear any previous error messages on success
-                router.push('/wallet');
-            } catch (err) {
-                setError('Please try again. ' + err.message);
-            }
-        }
-
-        fetchData(); // Call the async function within useEffect
-    }, [router]);
 
     useEffect(() => {
         // Retrieve from localStorage on component mount
@@ -56,9 +41,9 @@ export default function Home() {
             const account = await connect();
             setCurrentAccount(account);
             setError(null); // Clear any previous error messages on success
-            router.push('/wallet');
+            router.push("/wallet");
         } catch (err) {
-            setError('Please try again. ' + err.message);
+            setError("Please try again. " + err.message);
         }
     };
 
