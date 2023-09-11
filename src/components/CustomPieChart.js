@@ -94,7 +94,7 @@ const renderCustomizedLabel = ({
 
 function CustomPieChart({ renderCustomizedLabel }) {
     return (
-        <PieChart width={1000} height={250}>
+        <PieChart width={500} height={250}>
             <Pie
                 data={data}
                 cx={250}
