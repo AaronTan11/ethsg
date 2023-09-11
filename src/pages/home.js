@@ -84,9 +84,10 @@ export default function Home() {
     getSearchInput(e.target.value);
   };
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      setSearchResults(e.target.value);
-    }
+    // if (e.key === "Enter") {
+    // setSearchResults(e.target.value);
+    getSearchInput(e.target.value);
+    // }
   }
 
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -96,7 +97,7 @@ export default function Home() {
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
 
   useEffect(() => {
-    
+
     if (searchResults) {
       setSearchResults(searchResults);
       fetchQuery(defaultQuery, { walletAddress: searchResults })
@@ -111,34 +112,34 @@ export default function Home() {
       fetchQuery(ENSQuery, { walletAddress: searchResults })
         .then((r) => {
 
-        //code 1
+          //code 1
           //Handle the FetchQueryReturnType here
-        //   const domains = r.data?.Domains?.Domain || [];
-        //   const walletENS = domains.length > 0 ? domains[0].name : null;
-        //   console.log(walletENS);
-        //   setWalletENS(walletENS);
+          //   const domains = r.data?.Domains?.Domain || [];
+          //   const walletENS = domains.length > 0 ? domains[0].name : null;
+          //   console.log(walletENS);
+          //   setWalletENS(walletENS);
 
-        //code 2
-        // console.log(r)
-        // const walletENS = r.data.Domains.Domain[0].name;
-        // console.log(walletENS)
-        // setWalletENS(walletENS ?? [])
+          //code 2
+          // console.log(r)
+          // const walletENS = r.data.Domains.Domain[0].name;
+          // console.log(walletENS)
+          // setWalletENS(walletENS ?? [])
 
-        //gpt
-        console.log("ENS Response:", r); // Log the response for debugging
-        // Check if the expected data exists
-        const domains = r.data?.Domains?.Domain || [];
-        if (domains.length > 0) {
-          const walletENS = domains[0].name;
-          console.log("Wallet ENS:", walletENS); // Log the ENS value
-          setWalletENS(walletENS);
-        } else {
-          // Handle the case where no ENS name is found
-          console.log("No ENS name found for this wallet address.");
-          setWalletENS(null); // or setWalletENS("") or any default value you prefer
-        }
-      })
-      .catch((e) => console.error("An error occurred:", e));
+          //gpt
+          console.log("ENS Response:", r); // Log the response for debugging
+          // Check if the expected data exists
+          const domains = r.data?.Domains?.Domain || [];
+          if (domains.length > 0) {
+            const walletENS = domains[0].name;
+            console.log("Wallet ENS:", walletENS); // Log the ENS value
+            setWalletENS(walletENS);
+          } else {
+            // Handle the case where no ENS name is found
+            console.log("No ENS name found for this wallet address.");
+            setWalletENS(null); // or setWalletENS("") or any default value you prefer
+          }
+        })
+        .catch((e) => console.error("An error occurred:", e));
 
       fetch(`/api/get-mantle?wallet=${searchResults}`)
         .then((r) => r.json())
@@ -208,7 +209,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Ethereum </TableCell>
-                <TableCell className="text-right">{(balance.amount /Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
+                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}
@@ -224,7 +225,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Polygon </TableCell>
-                <TableCell className="text-right">{(balance.amount/Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
+                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}

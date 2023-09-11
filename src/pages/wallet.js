@@ -28,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
+import { BrowserProvider, formatEther } from "ethers";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
   ssr: false,
@@ -70,8 +71,6 @@ const ENSQuery = `query MyQuery($walletAddress: Address!) {
   }
 }`;
 
-
-
 // Initialization function, assumed to be working correctly
 init("919d17d75b9f495282b64ae0d5a10ab3");
 
@@ -95,6 +94,14 @@ export default function Home() {
   const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
   const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
+  const [eth, setEth] = useState(0);
+
+  const getEth = async (addr) => {
+    const provider = new BrowserProvider(window.ethereum)
+    const wei = await provider.getBalance(addr)
+    const eth = formatEther(wei)
+    return eth
+  }
 
   useEffect(() => {
     const storedAccount = localStorage.getItem("currentAccount");
@@ -113,14 +120,16 @@ export default function Home() {
       fetchQuery(ENSQuery, { walletAddress: storedAccount })
         .then((r) => {
           // Handle the FetchQueryReturnType here
-          const walletENS = r.data.Domains.Domain[0].name;
-          console.log(walletENS)
-          setWalletENS(walletENS ?? [])
+          const domain = r.data.Domains.Domain
+          const walletENS = domain ? domain[0].name : ''
+          setWalletENS(walletENS)
         })
 
       fetch(`/api/get-mantle?wallet=${storedAccount}`)
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
+
+      getEth(storedAccount).then((eth) => setEth(eth))
     }
   }, []);
 
@@ -134,7 +143,7 @@ export default function Home() {
             <br />
             <p> Wallet Address: {currentAccount} </p>
             <br />
-            <p> $122323424234 </p>
+            <p> {eth} ETH</p>
             <br />
           </div>
         </div>
@@ -159,6 +168,20 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                  <p className="px-4"></p>
+                </div>
+              </TableCell>
+              <TableCell> Ethereum </TableCell>
+              <TableCell className="text-right">{eth}</TableCell>
+              <TableCell className="text-right">$250.00</TableCell>
+            </TableRow>
             {ethereumTokenBalances.map((balance, index) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">
@@ -171,7 +194,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Ethereum </TableCell>
-                <TableCell className="text-right">{(balance.amount /Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
+                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}
@@ -187,7 +210,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Polygon </TableCell>
-                <TableCell className="text-right">{(balance.amount/Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
+                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}
