@@ -17,21 +17,6 @@ export default function Home() {
     const router = useRouter();
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const account = await connect();
-                setCurrentAccount(account);
-                setError(null); // Clear any previous error messages on success
-                router.push('/wallet');
-            } catch (err) {
-                setError('Please try again. ' + err.message);
-            }
-        }
-
-        fetchData(); // Call the async function within useEffect
-    }, [router]);
-
-    useEffect(() => {
         // Retrieve from localStorage on component mount
         const storedAccount = localStorage.getItem("currentAccount");
         if (storedAccount) {
@@ -61,9 +46,9 @@ export default function Home() {
             const account = await connect();
             setCurrentAccount(account);
             setError(null); // Clear any previous error messages on success
-            router.push('/wallet');
+            router.push("/wallet");
         } catch (err) {
-            setError('Please try again. ' + err.message);
+            setError("Please try again. " + err.message);
         }
     };
 

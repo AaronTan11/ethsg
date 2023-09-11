@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import NavBar from '@/components/navBar'
+import NavBar from "@/components/navBar";
 import {
   Command,
   CommandDialog,
@@ -11,9 +11,9 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command"
-import { Input } from "@/components/ui/input"
-
+} from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -22,101 +22,100 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
+import dynamic from "next/dynamic";
 
-//dummy shxt data
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 }
-];
+const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
+  ssr: false,
+});
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
-const RADIAN = Math.PI / 180;
-
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index
-}) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
-
-const defaultQuery = `
-query QB5($walletAddress: Identity!) {
-  TokenBalances(input: {filter: { owner: {_eq: $walletAddress}}, limit: 10, blockchain: ethereum}) {
+const defaultQuery = `query MyQuery($walletAddress: Identity!) {
+  Ethereum: TokenBalances(
+    input: {filter: {owner: {_eq: $walletAddress}, tokenType: {_eq: ERC20}}, blockchain: ethereum, limit: 50}
+  ) {
     TokenBalance {
-      amount
-      chainId
-      id
-      lastUpdatedBlock
-      lastUpdatedTimestamp
-      owner {
-        addresses
-      }
       tokenAddress
-      tokenId
-      tokenType
+      amount
       token {
         name
         symbol
+        decimals
       }
     }
   }
-}`
+  Polygon: TokenBalances(
+    input: {filter: {owner: {_eq: $walletAddress}, tokenType: {_eq: ERC20}}, blockchain: polygon, limit: 50}
+  ) {
+    TokenBalance {
+      tokenAddress
+      amount
+      token {
+        name
+        symbol
+        decimals
+      }
+    }
+  }
+}`;
 
-// hardcode atm for testing. airstack provider doesn't seem to work in _app.js
-init("919d17d75b9f495282b64ae0d5a10ab3")
+// Initialization function, assumed to be working correctly
+init("919d17d75b9f495282b64ae0d5a10ab3");
+
 
 export default function Home() {
+
+  const [searchInput, getSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const handleInput = (e) => {
+    getSearchInput(e.target.value);
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      setSearchResults(e.target.value);
+      console.log(searchResults);
+    }
+  }
+
   const [currentAccount, setCurrentAccount] = useState(null);
+  const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
+  const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
+  const [mantleTokenBalances, setMantleTokenBalances] = useState([])
 
   useEffect(() => {
-    // Retrieve from localStorage on component mount
     const storedAccount = localStorage.getItem("currentAccount");
     if (storedAccount) {
       setCurrentAccount(storedAccount);
       fetchQuery(defaultQuery, { walletAddress: storedAccount })
-        // .then(r => r.json())
-        .then(r => console.log(r))
+        .then((r) => {
+          // Handle the FetchQueryReturnType here
+          const ethereumTokenBalances = r.data.Ethereum.TokenBalance
+          const polygonTokenBalances = r.data.Polygon.TokenBalance
+          setEthereumTokenBalances(ethereumTokenBalances ?? [])
+          setPolygonTokenBalances(polygonTokenBalances ?? [])
+        })
+        .catch((e) => console.error("An error occurred:", e));
+      fetch(`/api/get-mantle?wallet=${storedAccount}`)
+        .then((r) => r.json())
+        .then((r) => setMantleTokenBalances(r.result ?? []))
     }
   }, []);
 
   return (
-
     <>
       <NavBar />
       <div className="p-10">
-
         <div className="pb-10">
           <Input
             type="search"
             placeholder="Search Crypto Addresses..."
             className="md:w-[100%] lg:w-[100%]"
+            value={searchInput}
+            onChange={handleInput}
+            onKeyPress={handleKeyPress}
           />
         </div>
         <div className="flex justify-between md:w-[50%] bg-slate-100 p-6 rounded-xl	">
@@ -137,40 +136,70 @@ export default function Home() {
           <p className="font-bold"> Assets </p>
           <Separator />
           <br />
-          <PieChart width={1000} height={250}>
-            <Pie
-              data={data}
-              cx={250}
-              cy={100}
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-          </PieChart>
+
+          <CustomPieChart />
         </div>
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Invoice</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Method</TableHead>
+              <TableHead className="w-[100px]"> Token </TableHead>
+              <TableHead> Blockchain </TableHead>
+              <TableHead className="text-right">
+                {" "}
+                Token Balance{" "}
+              </TableHead>
               <TableHead className="text-right">Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">INV001</TableCell>
-              <TableCell>Paid</TableCell>
-              <TableCell>Credit Card</TableCell>
-              <TableCell className="text-right">$250.00</TableCell>
-            </TableRow>
+            {ethereumTokenBalances.map((balance, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">
+                  <div className="flex items-center">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
+                    </Avatar>
+                    <p className="px-4">{balance.token.symbol}</p>
+                  </div>
+                </TableCell>
+                <TableCell> Ethereum </TableCell>
+                <TableCell className="text-right">{balance.amount / Math.pow(10, balance.token.decimals)}</TableCell>
+                <TableCell className="text-right">$250.00</TableCell>
+              </TableRow>
+            ))}
+            {polygonTokenBalances.map((balance, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">
+                  <div className="flex items-center">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
+                    </Avatar>
+                    <p className="px-4">{balance.token.symbol}</p>
+                  </div>
+                </TableCell>
+                <TableCell> Polygon </TableCell>
+                <TableCell className="text-right">{balance.amount}</TableCell>
+                <TableCell className="text-right">$250.00</TableCell>
+              </TableRow>
+            ))}
+            {mantleTokenBalances.map((balance, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">
+                  <div className="flex items-center">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>{balance.symbol}</AvatarFallback>
+                    </Avatar>
+                    <p className="px-4">{balance.symbol}</p>
+                  </div>
+                </TableCell>
+                <TableCell> Mantle </TableCell>
+                <TableCell className="text-right">{balance.balance}</TableCell>
+                <TableCell className="text-right">$250.00</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
