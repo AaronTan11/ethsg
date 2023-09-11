@@ -128,16 +128,6 @@ export default function Home() {
     <>
       <NavBar />
       <div className="p-10">
-        <div className="pb-10">
-          <Input
-            type="search"
-            placeholder="Search Crypto Addresses..."
-            className="md:w-[100%] lg:w-[100%]"
-            value={searchInput}
-            onChange={handleInput}
-            onKeyPress={handleKeyPress}
-          />
-        </div>
         <div className="flex justify-between md:w-[50%] bg-slate-100 p-6 rounded-xl	">
           <div>
             <p> ENS: {walletENS || "N/A"} </p>
@@ -146,11 +136,6 @@ export default function Home() {
             <br />
             <p> $122323424234 </p>
             <br />
-          </div>
-          <div>
-            <Button variant="outline" className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg">
-              Add to Portfolio
-            </Button>
           </div>
         </div>
         <br />
