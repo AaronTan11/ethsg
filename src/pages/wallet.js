@@ -29,6 +29,7 @@ import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
 import { BrowserProvider, formatEther } from "ethers";
+import CryptoTableRow from "@/components/CryptoTableRow";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
   ssr: false,
@@ -112,7 +113,6 @@ export default function Home() {
           // Handle the FetchQueryReturnType here
           const ethereumTokenBalances = r.data.Ethereum.TokenBalance
           const polygonTokenBalances = r.data.Polygon.TokenBalance
-          console.log(polygonTokenBalances)
           setEthereumTokenBalances(ethereumTokenBalances ?? [])
           setPolygonTokenBalances(polygonTokenBalances ?? [])
         })
@@ -182,37 +182,11 @@ export default function Home() {
               <TableCell className="text-right">{eth}</TableCell>
               <TableCell className="text-right">$250.00</TableCell>
             </TableRow>
-            {ethereumTokenBalances.map((balance, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center">
-                    <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
-                    </Avatar>
-                    <p className="px-4">{balance.token.symbol}</p>
-                  </div>
-                </TableCell>
-                <TableCell> Ethereum </TableCell>
-                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+            {ethereumTokenBalances.map((balance, i) => (
+              <CryptoTableRow balance={balance} key={i} />
             ))}
-            {polygonTokenBalances.map((balance, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center">
-                    <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
-                    </Avatar>
-                    <p className="px-4">{balance.token.symbol}</p>
-                  </div>
-                </TableCell>
-                <TableCell> Polygon </TableCell>
-                <TableCell className="text-right">{(balance.amount / Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+            {polygonTokenBalances.map((balance, i) => (
+              <CryptoTableRow balance={balance} key={i} />
             ))}
             {mantleTokenBalances.map((balance, index) => (
               <TableRow key={index}>
