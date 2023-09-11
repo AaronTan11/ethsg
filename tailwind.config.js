@@ -16,6 +16,11 @@ module.exports = {
       },
     },
     extend: {
+      borderWidth: {
+        '0.5': '0.5px',
+        '0.25': '0.25px',
+        // Add more custom border widths if needed
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

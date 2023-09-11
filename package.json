@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@airstack/airstack-react": "^0.5.2",
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-react": "^2.2.1",
     "@hookform/resolvers": "^3.3.1",
     "@metamask/sdk": "^0.6.1",
     "@radix-ui/react-accordion": "^1.1.2",
