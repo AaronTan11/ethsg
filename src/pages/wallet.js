@@ -33,29 +33,6 @@ const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
     ssr: false,
 });
 
-// const defaultQuery = `
-// query QB5($walletAddress: Identity!) {
-//   TokenBalances(input: {filter: { owner: {_eq: $walletAddress}}, limit: 10, blockchain: ethereum}) {
-//     TokenBalance {
-//       amount
-//       chainId
-//       id
-//       lastUpdatedBlock
-//       lastUpdatedTimestamp
-//       owner {
-//         addresses
-//       }
-//       tokenAddress
-//       tokenId
-//       tokenType
-//       token {
-//         name
-//         symbol
-//       }
-//     }
-
-//   }
-// }`
 const defaultQuery = `query MyQuery($walletAddress: Identity!) {
   Ethereum: TokenBalances(
     input: {filter: {owner: {_eq: $walletAddress}, tokenType: {_eq: ERC20}}, blockchain: ethereum, limit: 50}
@@ -66,6 +43,7 @@ const defaultQuery = `query MyQuery($walletAddress: Identity!) {
       token {
         name
         symbol
+        decimals
       }
     }
   }
@@ -78,6 +56,7 @@ const defaultQuery = `query MyQuery($walletAddress: Identity!) {
       token {
         name
         symbol
+        decimals
       }
     }
   }
@@ -86,8 +65,25 @@ const defaultQuery = `query MyQuery($walletAddress: Identity!) {
 // Initialization function, assumed to be working correctly
 init("919d17d75b9f495282b64ae0d5a10ab3");
 
+
 export default function Home() {
+
+    const [searchInput, getSearchInput] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const handleInput = (e) => {
+        getSearchInput(e.target.value);
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+          setSearchResults(e.target.value);
+          console.log(searchResults);
+        }
+    } 
+
     const [currentAccount, setCurrentAccount] = useState(null);
+    const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
+    const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
+    const [mantleTokenBalances, setMantleTokenBalances] = useState([])
 
     useEffect(() => {
         const storedAccount = localStorage.getItem("currentAccount");
@@ -96,9 +92,15 @@ export default function Home() {
             fetchQuery(defaultQuery, { walletAddress: storedAccount })
                 .then((r) => {
                     // Handle the FetchQueryReturnType here
-                    console.log(r);
-                })
+                    const ethereumTokenBalances = r.data.Ethereum.TokenBalance
+                    const polygonTokenBalances = r.data.Polygon.TokenBalance
+                    setEthereumTokenBalances(ethereumTokenBalances)
+                    setPolygonTokenBalances(polygonTokenBalances)
+                })  
                 .catch((e) => console.error("An error occurred:", e));
+            fetch(`/api/get-mantle?wallet=${storedAccount}`)
+                .then((r) => r.json())
+                .then((r) => setMantleTokenBalances(r.result))
         }
     }, []);
 
@@ -111,6 +113,9 @@ export default function Home() {
                         type="search"
                         placeholder="Search Crypto Addresses..."
                         className="md:w-[100%] lg:w-[100%]"
+                        value={searchInput}
+                        onChange={handleInput}
+                        onKeyPress={handleKeyPress}
                     />
                 </div>
                 <div className="flex justify-between md:w-[50%] bg-slate-100 p-6 rounded-xl	">
@@ -147,22 +152,54 @@ export default function Home() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium">
-                                <div className="flex items-center">
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <p className="px-4"> Eth</p>
-                                </div>
-                            </TableCell>
-                            <TableCell>Ethereum </TableCell>
-                            <TableCell className="text-right"> 100 </TableCell>
-                            <TableCell className="text-right">
-                                $250.00
-                            </TableCell>
-                        </TableRow>
+                      {ethereumTokenBalances.map((balance, index) => (
+                      <TableRow key={index}>
+                          <TableCell className="font-medium">
+                              <div className="flex items-center">
+                                  <Avatar>
+                                      <AvatarImage src="https://github.com/shadcn.png" />
+                                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
+                                  </Avatar>
+                                  <p className="px-4">{balance.token.symbol}</p>
+                              </div>
+                          </TableCell>
+                          <TableCell> Ethereum </TableCell>
+                          <TableCell className="text-right">{balance.amount}</TableCell>
+                          <TableCell className="text-right">$250.00</TableCell>
+                      </TableRow>
+                      ))}
+                      {polygonTokenBalances.map((balance, index) => (
+                      <TableRow key={index}>
+                          <TableCell className="font-medium">
+                              <div className="flex items-center">
+                                  <Avatar>
+                                      <AvatarImage src="https://github.com/shadcn.png" />
+                                      <AvatarFallback>{balance.token.symbol}</AvatarFallback>
+                                  </Avatar>
+                                  <p className="px-4">{balance.token.symbol}</p>
+                              </div>
+                          </TableCell>
+                          <TableCell> Polygon </TableCell>
+                          <TableCell className="text-right">{balance.amount}</TableCell>
+                          <TableCell className="text-right">$250.00</TableCell>
+                      </TableRow>
+                      ))}
+                      {mantleTokenBalances.map((balance, index) => (
+                      <TableRow key={index}>
+                          <TableCell className="font-medium">
+                              <div className="flex items-center">
+                                  <Avatar>
+                                      <AvatarImage src="https://github.com/shadcn.png" />
+                                      <AvatarFallback>{balance.symbol}</AvatarFallback>
+                                  </Avatar>
+                                  <p className="px-4">{balance.symbol}</p>
+                              </div>
+                          </TableCell>
+                          <TableCell> Mantle </TableCell>
+                          <TableCell className="text-right">{balance.balance}</TableCell>
+                          <TableCell className="text-right">$250.00</TableCell>
+                      </TableRow>
+                    ))}
                     </TableBody>
                 </Table>
             </div>
