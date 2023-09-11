@@ -62,6 +62,16 @@ const defaultQuery = `query MyQuery($walletAddress: Identity!) {
   }
 }`;
 
+const ENSQuery = `query MyQuery($walletAddress: Address!) {
+  Domains(input: {filter: {resolvedAddress: {_eq: $walletAddress}}, blockchain: ethereum}) {
+    Domain {
+      name
+    }
+  }
+}`;
+
+
+
 // Initialization function, assumed to be working correctly
 init("919d17d75b9f495282b64ae0d5a10ab3");
 
@@ -81,6 +91,7 @@ export default function Home() {
   }
 
   const [currentAccount, setCurrentAccount] = useState(null);
+  const [walletENS, setWalletENS] = useState(null);
   const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
   const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
@@ -99,6 +110,14 @@ export default function Home() {
           setPolygonTokenBalances(polygonTokenBalances ?? [])
         })
         .catch((e) => console.error("An error occurred:", e));
+      fetchQuery(ENSQuery, { walletAddress: storedAccount })
+        .then((r) => {
+          // Handle the FetchQueryReturnType here
+          const walletENS = r.data.Domains.Domain[0].name;
+          console.log(walletENS)
+          setWalletENS(walletENS ?? [])
+        })
+
       fetch(`/api/get-mantle?wallet=${storedAccount}`)
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
@@ -121,7 +140,7 @@ export default function Home() {
         </div>
         <div className="flex justify-between md:w-[50%] bg-slate-100 p-6 rounded-xl	">
           <div>
-            <p> ENS: </p>
+            <p> ENS: {walletENS || "N/A"} </p>
             <br />
             <p> Wallet Address: {currentAccount} </p>
             <br />
@@ -129,7 +148,9 @@ export default function Home() {
             <br />
           </div>
           <div>
-            <Button variant="outline">Add to Portfolio</Button>
+            <Button variant="outline" className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg">
+              Add to Portfolio
+            </Button>
           </div>
         </div>
         <br />
