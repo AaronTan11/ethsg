@@ -94,6 +94,7 @@ export default function Home() {
           // Handle the FetchQueryReturnType here
           const ethereumTokenBalances = r.data.Ethereum.TokenBalance
           const polygonTokenBalances = r.data.Polygon.TokenBalance
+          console.log(polygonTokenBalances)
           setEthereumTokenBalances(ethereumTokenBalances ?? [])
           setPolygonTokenBalances(polygonTokenBalances ?? [])
         })
@@ -164,7 +165,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Ethereum </TableCell>
-                <TableCell className="text-right">{balance.amount / Math.pow(10, balance.token.decimals)}</TableCell>
+                <TableCell className="text-right">{(balance.amount /Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}
@@ -180,7 +181,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Polygon </TableCell>
-                <TableCell className="text-right">{balance.amount}</TableCell>
+                <TableCell className="text-right">{(balance.amount/Math.pow(10, balance.token.decimals)).toFixed(2)}</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
             ))}
