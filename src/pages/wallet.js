@@ -13,7 +13,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command"
 import { Input } from "@/components/ui/input"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Table,
   TableBody,
@@ -187,20 +187,27 @@ export default function Home() {
           </PieChart>
         </div>
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Invoice</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Method</TableHead>
+              <TableHead className="w-[100px]"> Token </TableHead>
+              <TableHead> Blockchain </TableHead>
+              <TableHead className="text-right"> Token Balance </TableHead>
               <TableHead className="text-right">Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell className="font-medium">INV001</TableCell>
-              <TableCell>Paid</TableCell>
-              <TableCell>Credit Card</TableCell>
+              <TableCell className="font-medium"> 
+                <div className="flex items-center">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                  <p className="px-4"> Eth</p>
+                </div>
+              </TableCell>
+              <TableCell>Ethereum </TableCell>
+              <TableCell className="text-right"> 100 </TableCell>
               <TableCell className="text-right">$250.00</TableCell>
             </TableRow>
           </TableBody>
