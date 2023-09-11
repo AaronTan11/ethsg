@@ -129,7 +129,7 @@ export default function Home() {
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
 
-      getEth(storedAccount).then((eth) => setEth(eth))
+      getEth(storedAccount).then((eth) => setEth((new Number(eth)).toFixed(6)))
     }
   }, []);
 

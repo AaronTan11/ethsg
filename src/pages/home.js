@@ -71,81 +71,85 @@ const ENSQuery = `query MyQuery($walletAddress: Address!) {
 }`;
 
 
-
 // Initialization function, assumed to be working correctly
 init("919d17d75b9f495282b64ae0d5a10ab3");
 
-
 export default function Home() {
-
-  const [searchInput, getSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const handleInput = (e) => {
-    getSearchInput(e.target.value);
-  };
-  const handleKeyPress = (e) => {
-    // if (e.key === "Enter") {
-    // setSearchResults(e.target.value);
-    getSearchInput(e.target.value);
-    // }
-  }
-
-  const [currentAccount, setCurrentAccount] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [currentAccount, setCurrentAccount] = useState('');
   const [walletENS, setWalletENS] = useState(null);
   const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
   const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
 
   useEffect(() => {
+    const storedAccount = localStorage.getItem("currentAccount");
+    setCurrentAccount(storedAccount)
+    fetchQuery(defaultQuery, { walletAddress: storedAccount })
+      .then((r) => {
+        // Handle the FetchQueryReturnType here
+        const ethereumTokenBalances = r.data.Ethereum.TokenBalance
+        const polygonTokenBalances = r.data.Polygon.TokenBalance
+        setEthereumTokenBalances(ethereumTokenBalances ?? [])
+        setPolygonTokenBalances(polygonTokenBalances ?? [])
+      })
+      .catch((e) => console.error("An error occurred:", e));
+    fetchQuery(ENSQuery, { walletAddress: storedAccount })
+      .then((r) => {
+        //gpt
+        console.log("ENS Response:", r); // Log the response for debugging
+        // Check if the expected data exists
+        const domains = r.data?.Domains?.Domain || [];
+        if (domains.length > 0) {
+          const walletENS = domains[0].name;
+          console.log("Wallet ENS:", walletENS); // Log the ENS value
+          setWalletENS(walletENS);
+        } else {
+          // Handle the case where no ENS name is found
+          console.log("No ENS name found for this wallet address.");
+          setWalletENS(null); // or setWalletENS("") or any default value you prefer
+        }
+      })
+      .catch((e) => console.error("An error occurred:", e));
 
-    if (searchResults) {
-      setSearchResults(searchResults);
-      fetchQuery(defaultQuery, { walletAddress: searchResults })
-        .then((r) => {
-          // Handle the FetchQueryReturnType here
-          const ethereumTokenBalances = r.data.Ethereum.TokenBalance
-          const polygonTokenBalances = r.data.Polygon.TokenBalance
-          setEthereumTokenBalances(ethereumTokenBalances ?? [])
-          setPolygonTokenBalances(polygonTokenBalances ?? [])
-        })
-        .catch((e) => console.error("An error occurred:", e));
-      fetchQuery(ENSQuery, { walletAddress: searchResults })
-        .then((r) => {
+    fetch(`/api/get-mantle?wallet=${storedAccount}`)
+      .then((r) => r.json())
+      .then((r) => setMantleTokenBalances(r.result ?? []))
+  }, [])
 
-          //code 1
-          //Handle the FetchQueryReturnType here
-          //   const domains = r.data?.Domains?.Domain || [];
-          //   const walletENS = domains.length > 0 ? domains[0].name : null;
-          //   console.log(walletENS);
-          //   setWalletENS(walletENS);
+  const handleInput = (e) => {
+    setSearchInput(e.target.value);
+    fetchQuery(defaultQuery, { walletAddress: searchInput })
+      .then((r) => {
+        // Handle the FetchQueryReturnType here
+        const ethereumTokenBalances = r.data.Ethereum.TokenBalance
+        const polygonTokenBalances = r.data.Polygon.TokenBalance
+        setEthereumTokenBalances(ethereumTokenBalances ?? [])
+        setPolygonTokenBalances(polygonTokenBalances ?? [])
+      })
+      .catch((e) => console.error("An error occurred:", e));
+    fetchQuery(ENSQuery, { walletAddress: searchInput })
+      .then((r) => {
+        //gpt
+        console.log("ENS Response:", r); // Log the response for debugging
+        // Check if the expected data exists
+        const domains = r.data?.Domains?.Domain || [];
+        if (domains.length > 0) {
+          const walletENS = domains[0].name;
+          console.log("Wallet ENS:", walletENS); // Log the ENS value
+          setWalletENS(walletENS);
+        } else {
+          // Handle the case where no ENS name is found
+          console.log("No ENS name found for this wallet address.");
+          setWalletENS(null); // or setWalletENS("") or any default value you prefer
+        }
+      })
+      .catch((e) => console.error("An error occurred:", e));
 
-          //code 2
-          // console.log(r)
-          // const walletENS = r.data.Domains.Domain[0].name;
-          // console.log(walletENS)
-          // setWalletENS(walletENS ?? [])
-
-          //gpt
-          console.log("ENS Response:", r); // Log the response for debugging
-          // Check if the expected data exists
-          const domains = r.data?.Domains?.Domain || [];
-          if (domains.length > 0) {
-            const walletENS = domains[0].name;
-            console.log("Wallet ENS:", walletENS); // Log the ENS value
-            setWalletENS(walletENS);
-          } else {
-            // Handle the case where no ENS name is found
-            console.log("No ENS name found for this wallet address.");
-            setWalletENS(null); // or setWalletENS("") or any default value you prefer
-          }
-        })
-        .catch((e) => console.error("An error occurred:", e));
-
-      fetch(`/api/get-mantle?wallet=${searchResults}`)
-        .then((r) => r.json())
-        .then((r) => setMantleTokenBalances(r.result ?? []))
-    }
-  }, []);
+    fetch(`/api/get-mantle?wallet=${searchInput}`)
+      .then((r) => r.json())
+      .then((r) => setMantleTokenBalances(r.result ?? []))
+  };
 
   return (
     <>
@@ -158,14 +162,14 @@ export default function Home() {
             className="md:w-[100%] lg:w-[100%]"
             value={searchInput}
             onChange={handleInput}
-            onKeyPress={handleKeyPress}
+            onKeyPress={handleInput}
           />
         </div>
         <div className="flex justify-between md:w-[50%] bg-slate-100 p-6 rounded-xl	">
           <div>
             <p> ENS: {walletENS || "N/A"} </p>
             <br />
-            <p> Wallet Address: {searchResults} </p>
+            <p> Wallet Address: {searchInput || currentAccount} </p>
             <br />
             <p> $122323424234 </p>
             <br />
