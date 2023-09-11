@@ -71,10 +71,10 @@ export default function Home() {
                 <Button onClick={requestAccountAccess}>
                     Connect to Metamask
                 </Button>
-                <h2>
+                {/* <h2>
                     Account: {currentAccount ? currentAccount : "Not Connected"}
                 </h2>
-                {error && <p>Error: {error}</p>}
+                {error && <p>Error: {error}</p>} */}
             </div>
         </>
     );

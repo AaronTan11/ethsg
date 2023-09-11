@@ -66,21 +66,48 @@ const renderCustomizedLabel = ({
   );
 };
 
-const defaultQuery = `
-query QB5($walletAddress: Identity!) {
-  TokenBalances(input: {filter: { owner: {_eq: $walletAddress}}, limit: 10, blockchain: ethereum}) {
+// const defaultQuery = `
+// query QB5($walletAddress: Identity!) {
+//   TokenBalances(input: {filter: { owner: {_eq: $walletAddress}}, limit: 10, blockchain: ethereum}) {
+//     TokenBalance {
+//       amount
+//       chainId
+//       id
+//       lastUpdatedBlock
+//       lastUpdatedTimestamp
+//       owner {
+//         addresses
+//       }
+//       tokenAddress
+//       tokenId
+//       tokenType
+//       token {
+//         name
+//         symbol
+//       }
+//     }
+    
+//   }
+// }`
+const defaultQuery = `query MyQuery(myAddress: Identity!) {
+  Ethereum: TokenBalances(
+    input: {filter: {owner: {_eq: $walletAddress}, tokenType: {_eq: ERC20}}, blockchain: ethereum, limit: 50}
+  ) {
     TokenBalance {
-      amount
-      chainId
-      id
-      lastUpdatedBlock
-      lastUpdatedTimestamp
-      owner {
-        addresses
-      }
       tokenAddress
-      tokenId
-      tokenType
+      amount
+      token {
+        name
+        symbol
+      }
+    }
+  }
+  Polygon: TokenBalances(
+    input: {filter: {owner: {_eq: $walletAddress}, tokenType: {_eq: ERC20}}, blockchain: polygon, limit: 50}
+  ) {
+    TokenBalance {
+      tokenAddress
+      amount
       token {
         name
         symbol
@@ -88,6 +115,11 @@ query QB5($walletAddress: Identity!) {
     }
   }
 }`
+
+
+
+
+
 
 // hardcode atm for testing. airstack provider doesn't seem to work in _app.js
 init("919d17d75b9f495282b64ae0d5a10ab3")
