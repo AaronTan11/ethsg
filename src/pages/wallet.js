@@ -182,7 +182,7 @@ export default function Home() {
             <br />
             <p> Wallet Address: {currentAccount} </p>
             <br />
-            <p>{totalSum.toFixed(4)}USD</p>
+            <p>{totalSum.toFixed(2)} USD</p>
             <br />
           </div>
         </div>
