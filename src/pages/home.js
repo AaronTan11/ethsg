@@ -234,92 +234,88 @@ export default function Home() {
                     <Separator />
                     <br />
 
-                    <CustomPieChart />
-                </div>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[100px]"> Token </TableHead>
-                            <TableHead> Blockchain </TableHead>
-                            <TableHead className="text-right">
-                                {" "}
-                                Token Balance{" "}
-                            </TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium">
-                                <div className="flex items-center">
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback></AvatarFallback>
-                                    </Avatar>
-                                    <p className="px-4"> Eth </p>
-                                </div>
-                            </TableCell>
-                            <TableCell> Ethereum </TableCell>
-                            <TableCell className="text-right">{eth}</TableCell>
-                            <TableCell className="text-right">
-                                $250.00
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell className="font-medium">
-                                <div className="flex items-center">
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback></AvatarFallback>
-                                    </Avatar>
-                                    <p className="px-4"> Matic </p>
-                                </div>
-                            </TableCell>
-                            <TableCell> Polygon </TableCell>
-                            <TableCell className="text-right">
-                                {matic}
-                            </TableCell>
-                            <TableCell className="text-right"></TableCell>
-                        </TableRow>
-                        {ethereumTokenBalances.map((balance, i) => (
-                            <CryptoTableRow
-                                balance={balance}
-                                key={i}
-                                onRowValueChange={handleRowValueChange}
-                            />
-                        ))}
-                        {polygonTokenBalances.map((balance, i) => (
-                            <CryptoTableRow
-                                balance={balance}
-                                key={i}
-                                onRowValueChange={handleRowValueChange}
-                            />
-                        ))}
-                        {mantleTokenBalances.map((balance, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="font-medium">
-                                    <div className="flex items-center">
-                                        <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback>
-                                                {balance.symbol}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <p className="px-4">{balance.symbol}</p>
-                                    </div>
-                                </TableCell>
-                                <TableCell> Mantle </TableCell>
-                                <TableCell className="text-right">
-                                    {balance.balance}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    $250.00
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-        </>
-    );
+          <CustomPieChart />
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]"> Token </TableHead>
+              <TableHead> Blockchain </TableHead>
+              <TableHead className="text-right">
+                {" "}
+                Token Balance{" "}
+              </TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {searchInput ? (
+                <>
+                  {/* Render Ethereum token balance */}
+                  {eth > 0 && (
+                    <TableRow>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center">
+                          <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback></AvatarFallback>
+                          </Avatar>
+                          <p className="px-4"> Eth </p>
+                        </div>
+                      </TableCell>
+                      <TableCell> Ethereum </TableCell>
+                      <TableCell className="text-right">{eth}</TableCell>
+                      <TableCell className="text-right"></TableCell>
+                    </TableRow>
+                  )}
+
+                  {/* Render Polygon token balance */}
+                  {matic > 0 && (
+                    <TableRow>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center">
+                          <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback></AvatarFallback>
+                          </Avatar>
+                          <p className="px-4"> Matic </p>
+                        </div>
+                      </TableCell>
+                      <TableCell> Polygon </TableCell>
+                      <TableCell className="text-right">{matic}</TableCell>
+                      <TableCell className="text-right"></TableCell>
+                    </TableRow>
+                  )}
+                  {ethereumTokenBalances.map((balance, i) => (
+                    <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
+                  ))}
+                  {polygonTokenBalances.map((balance, i) => (
+                    <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
+                  ))}
+                  {mantleTokenBalances.map((balance, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center">
+                          <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>{balance.symbol}</AvatarFallback>
+                          </Avatar>
+                          <p className="px-4">{balance.symbol}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell> Mantle </TableCell>
+                      <TableCell className="text-right">{balance.balance}</TableCell>
+                      <TableCell className="text-right"></TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              ) : null}
+
+
+            
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
 }
