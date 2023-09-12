@@ -67,16 +67,16 @@ export default function Home() {
                         </p>
                         <Button
                             onClick={requestAccountAccess}
-                            className="w-full max-w-3xl font-mono text-lg md:text-2xl px-12 p-6 font-bold border-4 border-black text-black bg-yellow-500 hover:text-white"
+                            className="w-full max-w-3xl font-mono text-lg md:text-2xl px-12 p-6 font-bold border-4 border-black text-white hover:text-white"
                         >
                             Start Now!!!
                         </Button>
                     </div>
                     <Image
-                        src="/mascot.png"
+                        src="/graph.png"
                         alt="mascot"
-                        width="640"
-                        height="640"
+                        width="400"
+                        height="400"
                         className="hidden lg:block absolute right-28 -bottom-16"
                     />
                 </div>
@@ -87,7 +87,7 @@ export default function Home() {
                         </h2>
                         <div className="flex lg:justify-between">
                             <Image
-                                src="/coinn.png"
+                                src="/explain.png"
                                 alt="mascot 2"
                                 width="640"
                                 height="640"
@@ -117,7 +117,7 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col md:justify-center items-center px-4 lg:py-72 bg-yellow-500 space-y-8">
+                <div className="flex flex-col md:justify-center items-center px-4 lg:py-72 bg-slate-400 space-y-8">
                     <h2 className="font-[Ultra] text-3xl md:text-6xl text-center">
                         Still Scrolling?
                     </h2>

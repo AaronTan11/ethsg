@@ -82,6 +82,7 @@ export default function Home() {
     const [mantleTokenBalances, setMantleTokenBalances] = useState([]);
     const [eth, setEth] = useState(0);
     const [matic, setMatic] = useState(0);
+    const [showButton, setShowButton] = useState(true);
 
     const getEthBalance = async (walletAddress) => {
         try {
@@ -144,6 +145,10 @@ export default function Home() {
     };
 
     useEffect(() => {
+        const buttonState = localStorage.getItem("showButton");
+        if (buttonState !== null) {
+            setShowButton(JSON.parse(buttonState));
+        }
         const storedAccount = localStorage.getItem("currentAccount");
         if (storedAccount) {
             setCurrentAccount(storedAccount);
@@ -188,6 +193,8 @@ export default function Home() {
             polygonTokenBalances,
         };
         localStorage.setItem("portfolioData", JSON.stringify(portfolioData));
+        setShowButton(false); // Hide the button
+        localStorage.setItem("showButton", JSON.stringify(false)); // Save state to localStorage
     };
     return (
         <>
@@ -203,13 +210,15 @@ export default function Home() {
                         <br />
                     </div>
                     <div>
-                        <Button
-                            variant="outline"
-                            onClick={saveToPortfolio}
-                            className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg"
-                        >
-                            Add to Portfolio
-                        </Button>
+                        {showButton && (
+                            <Button
+                                variant="outline"
+                                onClick={saveToPortfolio}
+                                className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg"
+                            >
+                                Add to Portfolio
+                            </Button>
+                        )}
                     </div>
                 </div>
                 <br />
@@ -296,7 +305,10 @@ export default function Home() {
                                 <TableCell className="text-right">
                                     {balance.balance}
                                 </TableCell>
-                                <TableCell className="text-right" onRowValueChange={handleRowValueChange}>
+                                <TableCell
+                                    className="text-right"
+                                    onRowValueChange={handleRowValueChange}
+                                >
                                     $0.3
                                 </TableCell>
                             </TableRow>
