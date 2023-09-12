@@ -49,26 +49,15 @@ Follow these steps to start your journey with LinkedOutAndAbout:
 ### **The Tech Stack ⚙️**
 
 -   Package-Manager: `node.JS`
-    -   SDK: `openzeppelin` `ethers`
-    -   Network: `avalanche-fuji` `arbitrum-goerli`
+    -   SDK: `AirStack` `Metamask SDK`
+    -   Network: `Ethereum` `Polygon` `Mantle` 
 -   Frontend: `next` `react`
-    -   Contract Interactions: `wagmi`, `Metamask SDK`
+    -   Wallet Interactions: `Metamask`
     -   Styling: `tailwindcss`
-    -   Styled Components: `DeGraph`
--   Backend: `Kepler`
+    -   UI Kit : `ShadCN`
+-   Backend: `Etherscan API` `Polygonscan API` `CoinGecko API` `Mantle Explorer API`
 -   Misc:
-    -   Linting & Formatting: `eslint`, `prettier`
     -   Design: `excalidraw`
-
-#### **Deployments ⛓️**
-
--   Arbitrum Goerli
-
-    -   Post: [Post](https://goerli.arbiscan.io/address/0x4eE36Ac14D03445FC0D21C52EF06F7780c9981e3)
-
--   Avalanche Fuji
-
-    -   Post_V2: [Post](https://testnet.snowtrace.io/address/0x56590e8bdf817759fe543f55b80734a1424eaaef#writeContract)
 
 #### **Explore**
 
