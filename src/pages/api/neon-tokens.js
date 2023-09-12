@@ -1,5 +1,4 @@
-import { JsonRpcProvider, Contract } from "ethers"
-import abi from "@/lib/neonErc20Factory.json"
+import { JsonRpcProvider, Contract } from "ethers";
 
 // const lookup = [
 //   "0x202C35e517Fa803B537565c40F0a6965D7204609",
@@ -11,14 +10,15 @@ import abi from "@/lib/neonErc20Factory.json"
 // ]
 
 export default async function handler(req, res) {
-  getNeonTokens()
-  res.status(200).json({ message: "OK", body: {} })
+    getNeonTokens();
+    res.status(200).json({ message: "OK", body: {} });
 }
 
 const getNeonTokens = () => {
-  const providerUrl = 'https://eth-mainnet.g.alchemy.com/v2/lG35OlVCEHPOe_3aSVvMQ4KGN1T66Dff'
-  // const providerUrl = 'https://neon-proxy-mainnet.solana.p2p.org'
-  const provider = new JsonRpcProvider(providerUrl)
-  console.log(JSON.stringify(provider, null, 2))
-  return true
-}
+    const providerUrl =
+        "https://eth-mainnet.g.alchemy.com/v2/lG35OlVCEHPOe_3aSVvMQ4KGN1T66Dff";
+    // const providerUrl = 'https://neon-proxy-mainnet.solana.p2p.org'
+    const provider = new JsonRpcProvider(providerUrl);
+    console.log(JSON.stringify(provider, null, 2));
+    return true;
+};
