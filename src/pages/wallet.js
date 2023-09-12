@@ -1,18 +1,5 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import NavBar from "@/components/navBar";
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
@@ -23,9 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
+
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
 import CryptoTableRow from "@/components/CryptoTableRow";
@@ -75,9 +61,7 @@ const ENSQuery = `query MyQuery($walletAddress: Address!) {
 // Initialization function, assumed to be working correctly
 init("919d17d75b9f495282b64ae0d5a10ab3");
 
-
 export default function Home() {
-
   const [searchInput, getSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const handleInput = (e) => {
@@ -88,13 +72,13 @@ export default function Home() {
       setSearchResults(e.target.value);
       console.log(searchResults);
     }
-  }
+  };
 
   const [currentAccount, setCurrentAccount] = useState(null);
   const [walletENS, setWalletENS] = useState(null);
   const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
-  const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
-  const [mantleTokenBalances, setMantleTokenBalances] = useState([])
+  const [polygonTokenBalances, setPolygonTokenBalances] = useState([]);
+  const [mantleTokenBalances, setMantleTokenBalances] = useState([]);
   const [eth, setEth] = useState(0);
   const [matic, setMatic] = useState(0);
 
@@ -157,20 +141,18 @@ export default function Home() {
       fetchQuery(defaultQuery, { walletAddress: storedAccount })
         .then((r) => {
           // Handle the FetchQueryReturnType here
-          const ethereumTokenBalances = r.data.Ethereum.TokenBalance
-          const polygonTokenBalances = r.data.Polygon.TokenBalance
-          setEthereumTokenBalances(ethereumTokenBalances ?? [])
-          setPolygonTokenBalances(polygonTokenBalances ?? [])
+          const ethereumTokenBalances = r.data.Ethereum.TokenBalance;
+          const polygonTokenBalances = r.data.Polygon.TokenBalance;
+          setEthereumTokenBalances(ethereumTokenBalances ?? []);
+          setPolygonTokenBalances(polygonTokenBalances ?? []);
         })
         .catch((e) => console.error("An error occurred:", e));
-      fetchQuery(ENSQuery, { walletAddress: storedAccount })
-        .then((r) => {
-          // Handle the FetchQueryReturnType here
-          const domain = r.data.Domains.Domain
-          const walletENS = domain ? domain[0].name : ''
-          setWalletENS(walletENS)
-        })
-
+      fetchQuery(ENSQuery, { walletAddress: storedAccount }).then((r) => {
+        // Handle the FetchQueryReturnType here
+        const domain = r.data.Domains.Domain;
+        const walletENS = domain ? domain[0].name : "";
+        setWalletENS(walletENS);
+      })
       fetch(`/api/get-mantle?wallet=${storedAccount}`)
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
@@ -184,6 +166,12 @@ export default function Home() {
     }
   }, []);
 
+      const [totalSum, setTotalSum] = useState(0); 
+      // Define the function to handle row value change
+      const handleRowValueChange = (value) => {
+        setTotalSum(value);
+      };
+
   return (
     <>
       <NavBar />
@@ -194,7 +182,7 @@ export default function Home() {
             <br />
             <p> Wallet Address: {currentAccount} </p>
             <br />
-            <p> {eth} ETH</p>
+            <p>{totalSum.toFixed(4)}USD</p>
             <br />
           </div>
         </div>
@@ -248,10 +236,10 @@ export default function Home() {
               <TableCell className="text-right"></TableCell>
             </TableRow>
             {ethereumTokenBalances.map((balance, i) => (
-              <CryptoTableRow balance={balance} key={i} />
+              <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
             ))}
             {polygonTokenBalances.map((balance, i) => (
-              <CryptoTableRow balance={balance} key={i} />
+              <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
             ))}
             {mantleTokenBalances.map((balance, index) => (
               <TableRow key={index}>
