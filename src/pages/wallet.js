@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 import NavBar from "@/components/navBar";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Table,
@@ -11,11 +12,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
 import { BrowserProvider, formatEther } from "ethers";
+import CryptoTableRow from "@/components/CryptoTableRow";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
     ssr: false,
@@ -170,10 +173,10 @@ export default function Home() {
                             </TableCell>
                         </TableRow>
                         {ethereumTokenBalances.map((balance, i) => (
-                            <TableRow balance={balance} key={i} />
+                            <CryptoTableRow balance={balance} key={i} />
                         ))}
                         {polygonTokenBalances.map((balance, i) => (
-                            <TableRow balance={balance} key={i} />
+                            <CryptoTableRow balance={balance} key={i} />
                         ))}
                         {mantleTokenBalances.map((balance, index) => (
                             <TableRow key={index}>
