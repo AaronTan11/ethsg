@@ -84,7 +84,7 @@ export default function Home() {
                 <div className="flex md:justify-center px-4 lg:py-16">
                     <div className="max-w-7xl space-y-10">
                         <h2 className="font-[Ultra] text-3xl md:text-6xl text-center">
-                            Here's what we do for you:
+                            Here&apos;s what we do for you:
                         </h2>
                         <div className="flex lg:justify-between">
                             <Image
@@ -108,10 +108,10 @@ export default function Home() {
                                         a seasoned pro
                                     </li>
                                     <li>
-                                        Even if you're a total crypto noob, our
-                                        app's user-friendly interface will have
-                                        you feeling like a digital currency
-                                        expert in no time!
+                                        Even if you&apos;re a total crypto noob,
+                                        our app&apos;s user-friendly interface
+                                        will have you feeling like a digital
+                                        currency expert in no time!
                                     </li>
                                 </ul>
                             </div>
