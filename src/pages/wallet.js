@@ -28,12 +28,12 @@ import { Separator } from "@/components/ui/separator";
 import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
-import { BrowserProvider, formatEther } from "ethers";
 import CryptoTableRow from "@/components/CryptoTableRow";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
   ssr: false,
 });
+
 
 const defaultQuery = `query MyQuery($walletAddress: Identity!) {
   Ethereum: TokenBalances(
@@ -96,13 +96,59 @@ export default function Home() {
   const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
   const [eth, setEth] = useState(0);
+  const [matic, setMatic] = useState(0);
 
-  const getEth = async (addr) => {
-    const provider = new BrowserProvider(window.ethereum)
-    const wei = await provider.getBalance(addr)
-    const eth = formatEther(wei)
-    return eth
-  }
+  const getEthBalance = async (walletAddress) => {
+    try {
+      const apiKey = "BS93U9JSYZWDF4MYUHHENVWWCJRDG5SQ39"
+      const apiUrl = `https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${apiKey}`
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      
+      if (data.status === "1") {
+        const ethBalanceWei = data.result;
+        const ethBalance = parseFloat(ethBalanceWei) / 1e18; // Convert wei to Matic
+        return ethBalance;
+      } else {
+        console.error("Ethereum balance API returned an error:", data.message);
+        return 0; // Return 0 if there's an error
+      }
+    } catch (error) {
+      console.error("An error occurred while fetching Ethereum balance:", error);
+      return 0; // Return 0 if there's an error
+    }
+  };
+
+
+
+
+  //pull from this API https://api.polygonscan.com/api?module=account&action=balance&address=0x8f7261a46abe7df64b37516de5f016cd2f63e899&apikey=MMWWSU76N7FWJXBD113VETSC2EKY59TBUH
+
+  const getMaticBalance = async (walletAddress) => {
+    try {
+      const apiKey = "MMWWSU76N7FWJXBD113VETSC2EKY59TBUH";
+      const apiUrl = `https://api.polygonscan.com/api?module=account&action=balance&address=${walletAddress}&apikey=${apiKey}`;
+      
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+  
+      if (data.status === "1") {
+        // The balance is in wei, so you may want to convert it to Matic (Polygon).
+        const maticBalanceWei = data.result;
+        const maticBalance = parseFloat(maticBalanceWei) / 1e18; // Convert wei to Matic
+  
+        return maticBalance;
+      } else {
+        console.error("Polygon balance API returned an error:", data.message);
+        return 0; // Return 0 if there's an error
+      }
+    } catch (error) {
+      console.error("An error occurred while fetching Polygon balance:", error);
+      return 0; // Return 0 if there's an error
+    }
+  };
+
 
   useEffect(() => {
     const storedAccount = localStorage.getItem("currentAccount");
@@ -128,8 +174,13 @@ export default function Home() {
       fetch(`/api/get-mantle?wallet=${storedAccount}`)
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
+      
+      getMaticBalance(storedAccount).then((matic) => {
+        setMatic((new Number(matic)).toFixed(6));
+        console.log(matic)
+      })
 
-      getEth(storedAccount).then((eth) => setEth((new Number(eth)).toFixed(6)))
+      getEthBalance(storedAccount).then((eth) => setEth((new Number(eth)).toFixed(6)))
     }
   }, []);
 
@@ -175,12 +226,26 @@ export default function Home() {
                     <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback></AvatarFallback>
                   </Avatar>
-                  <p className="px-4"></p>
+                  <p className="px-4"> Eth </p>
                 </div>
               </TableCell>
               <TableCell> Ethereum </TableCell>
               <TableCell className="text-right">{eth}</TableCell>
               <TableCell className="text-right">$250.00</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                  <p className="px-4"> Matic </p>
+                </div>
+              </TableCell>
+              <TableCell> Polygon </TableCell>
+              <TableCell className="text-right">{matic}</TableCell>
+              <TableCell className="text-right"></TableCell>
             </TableRow>
             {ethereumTokenBalances.map((balance, i) => (
               <CryptoTableRow balance={balance} key={i} />

@@ -29,6 +29,8 @@ import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
 import CryptoTableRow from "@/components/CryptoTableRow";
+import { get } from "react-hook-form";
+import { set } from "date-fns";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
   ssr: false,
@@ -82,75 +84,97 @@ export default function Home() {
   const [ethereumTokenBalances, setEthereumTokenBalances] = useState([]);
   const [polygonTokenBalances, setPolygonTokenBalances] = useState([])
   const [mantleTokenBalances, setMantleTokenBalances] = useState([])
+  const [eth, setEth] = useState(0);
+  const [matic, setMatic] = useState(0);
 
-  useEffect(() => {
-    const storedAccount = localStorage.getItem("currentAccount");
-    setCurrentAccount(storedAccount)
-    fetchQuery(defaultQuery, { walletAddress: storedAccount })
-      .then((r) => {
-        // Handle the FetchQueryReturnType here
-        const ethereumTokenBalances = r.data.Ethereum.TokenBalance
-        const polygonTokenBalances = r.data.Polygon.TokenBalance
-        setEthereumTokenBalances(ethereumTokenBalances ?? [])
-        setPolygonTokenBalances(polygonTokenBalances ?? [])
-      })
-      .catch((e) => console.error("An error occurred:", e));
-    fetchQuery(ENSQuery, { walletAddress: storedAccount })
-      .then((r) => {
-        //gpt
-        console.log("ENS Response:", r); // Log the response for debugging
-        // Check if the expected data exists
-        const domains = r.data?.Domains?.Domain || [];
-        if (domains.length > 0) {
-          const walletENS = domains[0].name;
-          console.log("Wallet ENS:", walletENS); // Log the ENS value
-          setWalletENS(walletENS);
-        } else {
-          // Handle the case where no ENS name is found
-          console.log("No ENS name found for this wallet address.");
-          setWalletENS(null); // or setWalletENS("") or any default value you prefer
-        }
-      })
-      .catch((e) => console.error("An error occurred:", e));
 
-    fetch(`/api/get-mantle?wallet=${storedAccount}`)
-      .then((r) => r.json())
-      .then((r) => setMantleTokenBalances(r.result ?? []))
-  }, [])
+  const getEthBalance = async (walletAddress) => {
+    try {
+      const apiKey = "BS93U9JSYZWDF4MYUHHENVWWCJRDG5SQ39"
+      const apiUrl = `https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${apiKey}`
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      
+      if (data.status === "1") {
+        const ethBalanceWei = data.result;
+        const ethBalance = parseFloat(ethBalanceWei) / 1e18; // Convert wei to Matic
+        return ethBalance;
+      } else {
+        console.error("Ethereum balance API returned an error:", data.message);
+        return 0; // Return 0 if there's an error
+      }
+    } catch (error) {
+      console.error("An error occurred while fetching Ethereum balance:", error);
+      return 0; // Return 0 if there's an error
+    }
+  };
+
+  const getMaticBalance = async (walletAddress) => {
+    try {
+
+      const apiKey = "MMWWSU76N7FWJXBD113VETSC2EKY59TBUH";
+      const apiUrl = `https://api.polygonscan.com/api?module=account&action=balance&address=${walletAddress}&apikey=${apiKey}`;
+      
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (data.status === "1") {
+        // The balance is in wei, so you may want to convert it to Matic (Polygon).
+        const maticBalanceWei = data.result;
+        const maticBalance = parseFloat(maticBalanceWei) / 1e18; // Convert wei to Matic
+
+        return maticBalance;
+      } else {
+        console.error("Polygon balance API returned an error:", data.message);
+        return 0; // Return 0 if there's an error
+    }
+  } catch (error) {
+    console.error("An error occurred while fetching Polygon balance:", error);
+    return 0; // Return 0 if there's an error
+    }
+  };
+
+
 
   const handleInput = (e) => {
     setSearchInput(e.target.value);
-    fetchQuery(defaultQuery, { walletAddress: searchInput })
-      .then((r) => {
-        // Handle the FetchQueryReturnType here
-        const ethereumTokenBalances = r.data.Ethereum.TokenBalance
-        const polygonTokenBalances = r.data.Polygon.TokenBalance
-        setEthereumTokenBalances(ethereumTokenBalances ?? [])
-        setPolygonTokenBalances(polygonTokenBalances ?? [])
-      })
-      .catch((e) => console.error("An error occurred:", e));
-    fetchQuery(ENSQuery, { walletAddress: searchInput })
-      .then((r) => {
-        //gpt
-        console.log("ENS Response:", r); // Log the response for debugging
-        // Check if the expected data exists
-        const domains = r.data?.Domains?.Domain || [];
-        if (domains.length > 0) {
-          const walletENS = domains[0].name;
-          console.log("Wallet ENS:", walletENS); // Log the ENS value
-          setWalletENS(walletENS);
-        } else {
-          // Handle the case where no ENS name is found
-          console.log("No ENS name found for this wallet address.");
-          setWalletENS(null); // or setWalletENS("") or any default value you prefer
-        }
-      })
-      .catch((e) => console.error("An error occurred:", e));
-
-    fetch(`/api/get-mantle?wallet=${searchInput}`)
-      .then((r) => r.json())
-      .then((r) => setMantleTokenBalances(r.result ?? []))
   };
+  
+  useEffect(() => {
+    if (searchInput) {
+      fetchQuery(defaultQuery, { walletAddress: searchInput })
+        .then((r) => {
+          // Handle the FetchQueryReturnType here
+          const ethereumTokenBalances = r.data.Ethereum.TokenBalance
+          const polygonTokenBalances = r.data.Polygon.TokenBalance
+          setEthereumTokenBalances(ethereumTokenBalances ?? [])
+          setPolygonTokenBalances(polygonTokenBalances ?? [])
+        })
+        .catch((e) => console.error("An error occurred:", e));
+      fetchQuery(ENSQuery, { walletAddress: searchInput })
+        .then((r) => {
+          // Handle the FetchQueryReturnType here
+          const domain = r.data.Domains.Domain
+          const walletENS = domain ? domain[0].name : ''
+          setWalletENS(walletENS)
+        })
+
+      fetch(`/api/get-mantle?wallet=${searchInput}`)
+        .then((r) => r.json())
+        .then((r) => setMantleTokenBalances(r.result ?? []))
+      
+      getMaticBalance(searchInput).then((matic) => {
+        setMatic((new Number(matic)).toFixed(6));
+        console.log(matic)
+      })
+
+      getEthBalance(searchInput).then((eth) => {
+        setEth((new Number(eth)).toFixed(6));
+        console.log(eth)
+      })
+    }
+  }, [searchInput]);
 
   return (
     <>
@@ -170,7 +194,7 @@ export default function Home() {
           <div>
             <p> ENS: {walletENS || "N/A"} </p>
             <br />
-            <p> Wallet Address: {searchInput || currentAccount} </p>
+            <p> Wallet Address: {searchInput} </p>
             <br />
             <p> $122323424234 </p>
             <br />
@@ -202,6 +226,34 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
+          <TableRow>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                  <p className="px-4"> Eth </p>
+                </div>
+              </TableCell>
+              <TableCell> Ethereum </TableCell>
+              <TableCell className="text-right">{eth}</TableCell>
+              <TableCell className="text-right">$250.00</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback></AvatarFallback>
+                  </Avatar>
+                  <p className="px-4"> Matic </p>
+                </div>
+              </TableCell>
+              <TableCell> Polygon </TableCell>
+              <TableCell className="text-right">{matic}</TableCell>
+              <TableCell className="text-right"></TableCell>
+            </TableRow>
             {ethereumTokenBalances.map((balance, i) => (
               <CryptoTableRow balance={balance} key={i} />
             ))}
@@ -230,4 +282,3 @@ export default function Home() {
     </>
   );
 }
-
