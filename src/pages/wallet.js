@@ -111,9 +111,48 @@ export default function Home() {
                 setWalletENS(walletENS);
             });
 
-            fetch(`/api/get-mantle?wallet=${storedAccount}`)
-                .then((r) => r.json())
-                .then((r) => setMantleTokenBalances(r.result ?? []));
+            const [totalSum, setTotalSum] = useState(0);
+
+            // Define the function to handle row value change
+            const handleRowValueChange = (value) => {
+                // Update the state with the new total sum
+                setTotalSum(value);
+            };
+
+            useEffect(() => {
+                const storedAccount = localStorage.getItem("currentAccount");
+                if (storedAccount) {
+                    setCurrentAccount(storedAccount);
+                    fetchQuery(defaultQuery, { walletAddress: storedAccount })
+                        .then((r) => {
+                            // Handle the FetchQueryReturnType here
+                            const ethereumTokenBalances =
+                                r.data.Ethereum.TokenBalance;
+                            const polygonTokenBalances =
+                                r.data.Polygon.TokenBalance;
+                            setEthereumTokenBalances(
+                                ethereumTokenBalances ?? []
+                            );
+                            setPolygonTokenBalances(polygonTokenBalances ?? []);
+                        })
+                        .catch((e) => console.error("An error occurred:", e));
+                    fetchQuery(ENSQuery, { walletAddress: storedAccount }).then(
+                        (r) => {
+                            // Handle the FetchQueryReturnType here
+                            const domain = r.data.Domains.Domain;
+                            const walletENS = domain ? domain[0].name : "";
+                            setWalletENS(walletENS);
+                        }
+                    );
+                    fetch(`/api/get-mantle?wallet=${storedAccount}`)
+                        .then((r) => r.json())
+                        .then((r) => setMantleTokenBalances(r.result ?? []));
+
+                    getEth(storedAccount).then((eth) =>
+                        setEth(new Number(eth).toFixed(6))
+                    );
+                }
+            }, []);
 
             getEth(storedAccount).then((eth) =>
                 setEth(new Number(eth).toFixed(6))
@@ -131,7 +170,7 @@ export default function Home() {
                         <br />
                         <p> Wallet Address: {currentAccount} </p>
                         <br />
-                        <p> {eth} ETH</p>
+                        <p>{totalSum.toFixed(4)} USD</p>
                         <br />
                     </div>
                 </div>
@@ -168,15 +207,21 @@ export default function Home() {
                             </TableCell>
                             <TableCell> Ethereum </TableCell>
                             <TableCell className="text-right">{eth}</TableCell>
-                            <TableCell className="text-right">
-                                $250.00
-                            </TableCell>
+                            <TableCell className="text-right"> </TableCell>
                         </TableRow>
                         {ethereumTokenBalances.map((balance, i) => (
-                            <CryptoTableRow balance={balance} key={i} />
+                            <CryptoTableRow
+                                balance={balance}
+                                onRowValueChange={handleRowValueChange}
+                                key={i}
+                            />
                         ))}
                         {polygonTokenBalances.map((balance, i) => (
-                            <CryptoTableRow balance={balance} key={i} />
+                            <CryptoTableRow
+                                balance={balance}
+                                onRowValueChange={handleRowValueChange}
+                                key={i}
+                            />
                         ))}
                         {mantleTokenBalances.map((balance, index) => (
                             <TableRow key={index}>

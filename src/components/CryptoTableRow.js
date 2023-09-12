@@ -3,7 +3,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import geckomap from "@/lib/geckomap.json";
 
-export default function CryptoTableRow({ balance }) {
+export default function CryptoTableRow({ balance, onRowValueChange }) {
     const [rate, setRate] = useState(0);
     useEffect(() => {
         const getRate = async () => {
@@ -14,11 +14,19 @@ export default function CryptoTableRow({ balance }) {
                 }`
             );
             const json = await res.json();
-            console.log(json.market_data.current_price.usd, "tesfdsfdssd");
+            // console.log(json.market_data.current_price.usd, 'tesfdsfdssd')
             return json.market_data.current_price.usd;
         };
         getRate().then((rate) => setRate(rate));
-    });
+    }, [balance.token.name]);
+
+    const value =
+        rate * (balance.amount / Math.pow(10, balance.token.decimals));
+
+    // Notify the parent component about the value change
+    useEffect(() => {
+        onRowValueChange(value);
+    }, [value, onRowValueChange]);
 
     return (
         <TableRow>
@@ -38,11 +46,7 @@ export default function CryptoTableRow({ balance }) {
                 ).toFixed(2)}
             </TableCell>
             <TableCell className="text-right">
-                {(
-                    rate *
-                    (balance.amount / Math.pow(10, balance.token.decimals))
-                ).toFixed(4)}{" "}
-                USD
+                ${value.toFixed(4)} USD
             </TableCell>
         </TableRow>
     );
