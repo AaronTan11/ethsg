@@ -57,19 +57,20 @@ export default function Home() {
                 <div className="relative flex justify-center px-4 lg:py-16">
                     <div className="max-w-7xl space-y-10">
                         <h1 className="font-[Ultra] text-4xl md:text-7xl">
-                            The *ONLY* Portfolio Manager You'll Ever Need!
+                            The &ast;ONLY&ast; Portfolio Manager You&apos;ll
+                            Ever Need!
                         </h1>
                         <p className="font-mono text-lg md:text-2xl max-w-3xl">
                             Step into the Crypto Realm with Our Web3 Portfolio
-                            Manager App – Simplify, Strategize, and Stay Groovy
-                            with Your Cryptocurrencies! We'll take care of
-                            everything, you're the boss!
+                            Manager App - Simplify, Strategize, and Stay Groovy
+                            with Your Cryptocurrencies! We&apos;ll take care of
+                            everything, you&apos;re the boss!
                         </p>
                         <Button
                             onClick={requestAccountAccess}
                             className="w-full max-w-3xl font-mono text-lg md:text-2xl px-12 p-6 font-bold border-4 border-black text-white hover:text-white"
                         >
-                            Start Now!!!
+                            Start Now&excl;&excl;&excl;
                         </Button>
                     </div>
                     <Image

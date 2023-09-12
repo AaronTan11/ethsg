@@ -28,4 +28,4 @@ const openaiapi = async (req, res) => {
     }
 };
 
-export default myApiHandler;
+export default openaiapi;
