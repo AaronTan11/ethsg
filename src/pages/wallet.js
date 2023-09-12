@@ -258,7 +258,7 @@ export default function Home() {
                 </TableCell>
                 <TableCell> Ethereum </TableCell>
                 <TableCell className="text-right">{eth}</TableCell>
-                <TableCell className="text-right">{ethbalance.toFixed(2)}</TableCell>
+                <TableCell className="text-right">${ethbalance.toFixed(4)} USD</TableCell>
               </TableRow>
             ) 
             }
@@ -296,7 +296,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Mantle </TableCell>
-                <TableCell className="text-right">{balance.balance}</TableCell>
+                <TableCell className="text-right">{balance.balance/ Math.pow(10, balance.decimals)}</TableCell>
                 <TableCell className="text-right"></TableCell>
               </TableRow>
             ))}
