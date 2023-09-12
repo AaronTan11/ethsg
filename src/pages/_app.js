@@ -10,6 +10,7 @@ import {
     terminateSDK,
 } from "@/functions/metamaskFunctions";
 import { AirstackProvider } from "@airstack/airstack-react";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function App({ Component, pageProps }) {
     useEffect(() => {
@@ -35,6 +36,7 @@ export default function App({ Component, pageProps }) {
         <>
             <AirstackProvider apiKey="919d17d75b9f495282b64ae0d5a10ab3">
                 <Component {...pageProps} />
+                <Toaster />
             </AirstackProvider>
         </>
     );

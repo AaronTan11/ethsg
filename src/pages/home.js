@@ -29,8 +29,7 @@ import { ResponsiveContainer, PieChart, Pie, Legend, Cell } from "recharts";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import dynamic from "next/dynamic";
 import CryptoTableRow from "@/components/CryptoTableRow";
-import { get } from "react-hook-form";
-import { set } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
 const CustomPieChart = dynamic(() => import("@/components/CustomPieChart"), {
     ssr: false,
@@ -86,6 +85,7 @@ export default function Home() {
     const [eth, setEth] = useState(0);
     const [matic, setMatic] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
+    const { toast } = useToast();
 
     const getEthBalance = async (walletAddress) => {
         try {
@@ -221,7 +221,12 @@ export default function Home() {
                     <div>
                         <Button
                             variant="outline"
-                            onClick={saveToPortfolio}
+                            onClick={() => {
+                                saveToPortfolio();
+                                toast({
+                                    description: "Added to Portfolio!",
+                                });
+                            }}
                             className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg"
                         >
                             Add to Portfolio
