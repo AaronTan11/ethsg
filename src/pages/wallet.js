@@ -296,7 +296,7 @@ export default function Home() {
                   </div>
                 </TableCell>
                 <TableCell> Mantle </TableCell>
-                <TableCell className="text-right">{balance.balance/ Math.pow(10, balance.decimals)}</TableCell>
+                <TableCell className="text-right">{(balance.balance)/ Math.pow(10, balance.decimals)}</TableCell>
                 <TableCell className="text-right"></TableCell>
               </TableRow>
             ))}

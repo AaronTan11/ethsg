@@ -262,7 +262,7 @@ export default function Home() {
                       <TableCell className="font-medium">
                         <div className="flex items-center">
                           <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarImage src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880" />
                             <AvatarFallback></AvatarFallback>
                           </Avatar>
                           <p className="px-4"> Eth </p>
@@ -280,7 +280,7 @@ export default function Home() {
                       <TableCell className="font-medium">
                         <div className="flex items-center">
                           <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarImage src="https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912" />
                             <AvatarFallback></AvatarFallback>
                           </Avatar>
                           <p className="px-4"> Matic </p>
@@ -302,7 +302,7 @@ export default function Home() {
                       <TableCell className="font-medium">
                         <div className="flex items-center">
                           <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarImage src="https://assets.coingecko.com/coins/images/30980/small/token-logo.png?1689320029" />
                             <AvatarFallback>{balance.symbol}</AvatarFallback>
                           </Avatar>
                           <p className="px-4">{balance.symbol}</p>
