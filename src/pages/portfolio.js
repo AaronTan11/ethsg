@@ -134,7 +134,7 @@ function getFutureTimestamp(daysAhead) {
 }
 
 // Your analyzeWallet function
-async function analyzeWallet(walletData, geckoMap) {
+async function analyzeWallet(walletData) {
     const riskAssessment = [];
     let totalMarketCap = 0;
     let totalVolume = 0;
@@ -154,19 +154,9 @@ async function analyzeWallet(walletData, geckoMap) {
                 token: { name, symbol },
             } = balance;
 
-            let usableName = null;
-            for (const word of name.split(" ")) {
-                if (geckoMap[word]) {
-                    usableName = word;
-                    break;
-                }
-            }
+            console.log(name, geckoMap[name]);
 
-            if (!usableName) continue;
-
-            const coingeckoData = await fetchCoinGeckoData(
-                geckoMap[usableName]
-            );
+            const coingeckoData = await fetchCoinGeckoData(geckoMap[name]);
             if (!coingeckoData) continue;
 
             const avgMarketCap =
@@ -200,6 +190,7 @@ async function analyzeWallet(walletData, geckoMap) {
         item.volumeShare = item.avgVolume / totalVolume;
     }
 
+    console.log(riskAssessment);
     return riskAssessment;
 }
 
@@ -231,7 +222,12 @@ export default function Home() {
     useEffect(() => {
         const storedPortfolioData = localStorage.getItem("portfolioData");
         if (storedPortfolioData) {
-            const parsedPortfolioData = JSON.parse(storedPortfolioData);
+            const parsedPortfolioData = {
+                ethereumTokenBalances:
+                    JSON.parse(storedPortfolioData).ethereumTokenBalances,
+                polygonTokenBalances:
+                    JSON.parse(storedPortfolioData).polygonTokenBalances,
+            };
             const performRiskAssessment = async () => {
                 const riskMetrics = await analyzeWallet(parsedPortfolioData);
                 setRiskResult(riskMetrics);

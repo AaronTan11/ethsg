@@ -182,7 +182,13 @@ export default function Home() {
     const handleRowValueChange = (value) => {
         setTotalSum(value);
     };
-
+    const saveToPortfolio = () => {
+        const portfolioData = {
+            ethereumTokenBalances,
+            polygonTokenBalances,
+        };
+        localStorage.setItem("portfolioData", JSON.stringify(portfolioData));
+    };
     return (
         <>
             <NavBar />
@@ -195,6 +201,15 @@ export default function Home() {
                         <br />
                         <p>{totalSum.toFixed(4)}USD</p>
                         <br />
+                    </div>
+                    <div>
+                        <Button
+                            variant="outline"
+                            onClick={saveToPortfolio}
+                            className="text-black text-center border-b-2 hover:bg-slate-950 md:hover:text-white rounded-lg"
+                        >
+                            Add to Portfolio
+                        </Button>
                     </div>
                 </div>
                 <br />
