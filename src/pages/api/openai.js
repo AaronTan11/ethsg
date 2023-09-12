@@ -13,7 +13,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async (req, res) => {
+const openaiapi = async (req, res) => {
     if (req.body.prompt !== undefined) {
         const completion = await openai.chat.completions.create({
             messages: [{ role: "system", content: `${req.body.prompt}` }],
@@ -27,3 +27,5 @@ export default async (req, res) => {
         res.status(400).json({ text: "No prompt provided." });
     }
 };
+
+export default myApiHandler;
