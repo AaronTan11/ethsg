@@ -254,7 +254,7 @@ export default function Home() {
                 </TableCell>
                 <TableCell> Mantle </TableCell>
                 <TableCell className="text-right">{balance.balance}</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
+                <TableCell className="text-right"></TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -95,7 +95,7 @@ export default function Home() {
 
       const response = await fetch(apiUrl);
       const data = await response.json();
-      
+
       if (data.status === "1") {
         const ethBalanceWei = data.result;
         const ethBalance = parseFloat(ethBalanceWei) / 1e18; // Convert wei to Matic
@@ -115,7 +115,7 @@ export default function Home() {
 
       const apiKey = "MMWWSU76N7FWJXBD113VETSC2EKY59TBUH";
       const apiUrl = `https://api.polygonscan.com/api?module=account&action=balance&address=${walletAddress}&apikey=${apiKey}`;
-      
+
       const response = await fetch(apiUrl);
       const data = await response.json();
 
@@ -128,10 +128,10 @@ export default function Home() {
       } else {
         console.error("Polygon balance API returned an error:", data.message);
         return 0; // Return 0 if there's an error
-    }
-  } catch (error) {
-    console.error("An error occurred while fetching Polygon balance:", error);
-    return 0; // Return 0 if there's an error
+      }
+    } catch (error) {
+      console.error("An error occurred while fetching Polygon balance:", error);
+      return 0; // Return 0 if there's an error
     }
   };
 
@@ -140,7 +140,7 @@ export default function Home() {
   const handleInput = (e) => {
     setSearchInput(e.target.value);
   };
-  
+
   useEffect(() => {
     if (searchInput) {
       fetchQuery(defaultQuery, { walletAddress: searchInput })
@@ -163,7 +163,7 @@ export default function Home() {
       fetch(`/api/get-mantle?wallet=${searchInput}`)
         .then((r) => r.json())
         .then((r) => setMantleTokenBalances(r.result ?? []))
-      
+
       getMaticBalance(searchInput).then((matic) => {
         setMatic((new Number(matic)).toFixed(6));
         console.log(matic)
@@ -175,6 +175,11 @@ export default function Home() {
       })
     }
   }, [searchInput]);
+  const [totalSum, setTotalSum] = useState(0);
+  // Define the function to handle row value change
+  const handleRowValueChange = (value) => {
+    setTotalSum(value);
+  };
 
   return (
     <>
@@ -196,7 +201,7 @@ export default function Home() {
             <br />
             <p> Wallet Address: {searchInput} </p>
             <br />
-            <p> $122323424234 </p>
+            <p>{totalSum.toFixed(4)}USD</p>
             <br />
           </div>
           <div>
@@ -226,7 +231,7 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-          <TableRow>
+            <TableRow>
               <TableCell className="font-medium">
                 <div className="flex items-center">
                   <Avatar>
@@ -255,10 +260,10 @@ export default function Home() {
               <TableCell className="text-right"></TableCell>
             </TableRow>
             {ethereumTokenBalances.map((balance, i) => (
-              <CryptoTableRow balance={balance} key={i} />
+              <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
             ))}
             {polygonTokenBalances.map((balance, i) => (
-              <CryptoTableRow balance={balance} key={i} />
+              <CryptoTableRow balance={balance} onRowValueChange={handleRowValueChange} key={i} />
             ))}
             {mantleTokenBalances.map((balance, index) => (
               <TableRow key={index}>
@@ -273,7 +278,7 @@ export default function Home() {
                 </TableCell>
                 <TableCell> Mantle </TableCell>
                 <TableCell className="text-right">{balance.balance}</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
+                <TableCell className="text-right"></TableCell>
               </TableRow>
             ))}
           </TableBody>
