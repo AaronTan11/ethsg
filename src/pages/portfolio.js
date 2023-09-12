@@ -222,25 +222,27 @@ export default function Home() {
     useEffect(() => {
         const storedPortfolioData = localStorage.getItem("portfolioData");
         if (storedPortfolioData) {
-            const parsedPortfolioData = {
-                ethereumTokenBalances:
-                    JSON.parse(storedPortfolioData).ethereumTokenBalances,
-                polygonTokenBalances:
-                    JSON.parse(storedPortfolioData).polygonTokenBalances,
-            };
-            const performRiskAssessment = async () => {
-                const riskMetrics = await analyzeWallet(parsedPortfolioData);
-                setRiskResult(riskMetrics);
-                setPrompt(riskMetrics);
-                if (riskMetrics.length > 0) {
-                    getResponseFromOpenAI();
-                }
-            };
-            performRiskAssessment().catch((err) => {
-                console.error("An error occurred during risk assessment:", err);
-            });
+            // const parsedPortfolioData = {
+            //     ethereumTokenBalances:
+            //         JSON.parse(storedPortfolioData).ethereumTokenBalances,
+            //     polygonTokenBalances:
+            //         JSON.parse(storedPortfolioData).polygonTokenBalances,
+            // };
+            // const performRiskAssessment = async () => {
+            //     const riskMetrics = await analyzeWallet(parsedPortfolioData);
+            //     setRiskResult(riskMetrics);
+            //     setPrompt(riskMetrics);
+            //     if (riskMetrics.length > 0) {
+            //         getResponseFromOpenAI();
+            //     }
+            // };
+            // performRiskAssessment().catch((err) => {
+            //     console.error("An error occurred during risk assessment:", err);
+            // });
 
-            console.log(parsedPortfolioData);
+            // console.log(parsedPortfolioData);
+            getResponseFromOpenAI();
+            console.log(response);
         }
     }, []);
 
@@ -248,13 +250,19 @@ export default function Home() {
         setResponse("");
         console.log("Getting response from OpenAI...");
         setIsLoading(true);
+        const storedPortfolioData = localStorage.getItem("portfolioData");
+        const promptData = storedPortfolioData
+            ? JSON.stringify(JSON.parse(storedPortfolioData), null, 2)
+            : "No data available";
         const response = await fetch("/api/openai", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                prompt: "tell me the analysis of these " + prompt,
+                prompt:
+                    "give me full detail in analysis in not more than 10 lines of words while making sure it's also covered in natural language response only and in simple words/language. we can skip having to list down the token address and other details that was already provided. I only want the market, risk or whatever you can analyse based on these data. Don't tell me to note anything" +
+                    promptData,
             }),
         });
 
@@ -291,8 +299,13 @@ export default function Home() {
                             ))
                         ) : (
                             <>
-                                <p>Data not available or Coin not found.</p>
-                                <p>{response}</p>
+                                {response ? (
+                                    <div className="max-w-xl ">
+                                        <p>{response}</p>
+                                    </div>
+                                ) : (
+                                    <p>Data not available or Coin not found.</p>
+                                )}
                             </>
                         )}
                     </div>

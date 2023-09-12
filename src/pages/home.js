@@ -182,6 +182,8 @@ export default function Home() {
             });
         }
     }, [searchInput]);
+
+    // Define the function to handle row value change
     const handleRowValueChange = (value) => {
         setTotalSum(value);
     };
@@ -213,7 +215,7 @@ export default function Home() {
                         <br />
                         <p> Wallet Address: {searchInput} </p>
                         <br />
-                        <p> $122323424234 </p>
+                        <p>{totalSum.toFixed(4)}USD</p>
                         <br />
                     </div>
                     <div>
