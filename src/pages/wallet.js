@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import NavBar from "@/components/navBar";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -110,55 +109,21 @@ export default function Home() {
                 const walletENS = domain ? domain[0].name : "";
                 setWalletENS(walletENS);
             });
-
-            const [totalSum, setTotalSum] = useState(0);
-
-            // Define the function to handle row value change
-            const handleRowValueChange = (value) => {
-                // Update the state with the new total sum
-                setTotalSum(value);
-            };
-
-            useEffect(() => {
-                const storedAccount = localStorage.getItem("currentAccount");
-                if (storedAccount) {
-                    setCurrentAccount(storedAccount);
-                    fetchQuery(defaultQuery, { walletAddress: storedAccount })
-                        .then((r) => {
-                            // Handle the FetchQueryReturnType here
-                            const ethereumTokenBalances =
-                                r.data.Ethereum.TokenBalance;
-                            const polygonTokenBalances =
-                                r.data.Polygon.TokenBalance;
-                            setEthereumTokenBalances(
-                                ethereumTokenBalances ?? []
-                            );
-                            setPolygonTokenBalances(polygonTokenBalances ?? []);
-                        })
-                        .catch((e) => console.error("An error occurred:", e));
-                    fetchQuery(ENSQuery, { walletAddress: storedAccount }).then(
-                        (r) => {
-                            // Handle the FetchQueryReturnType here
-                            const domain = r.data.Domains.Domain;
-                            const walletENS = domain ? domain[0].name : "";
-                            setWalletENS(walletENS);
-                        }
-                    );
-                    fetch(`/api/get-mantle?wallet=${storedAccount}`)
-                        .then((r) => r.json())
-                        .then((r) => setMantleTokenBalances(r.result ?? []));
-
-                    getEth(storedAccount).then((eth) =>
-                        setEth(new Number(eth).toFixed(6))
-                    );
-                }
-            }, []);
+            fetch(`/api/get-mantle?wallet=${storedAccount}`)
+                .then((r) => r.json())
+                .then((r) => setMantleTokenBalances(r.result ?? []));
 
             getEth(storedAccount).then((eth) =>
                 setEth(new Number(eth).toFixed(6))
             );
         }
     }, []);
+
+    const [totalSum, setTotalSum] = useState(0);
+    // Define the function to handle row value change
+    const handleRowValueChange = (value) => {
+        setTotalSum(value);
+    };
 
     return (
         <>
@@ -170,7 +135,7 @@ export default function Home() {
                         <br />
                         <p> Wallet Address: {currentAccount} </p>
                         <br />
-                        <p>{totalSum.toFixed(4)} USD</p>
+                        <p>{totalSum.toFixed(4)}USD</p>
                         <br />
                     </div>
                 </div>
