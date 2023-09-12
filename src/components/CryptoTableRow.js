@@ -33,7 +33,7 @@ export default function CryptoTableRow({ balance, onRowValueChange }) {
             <TableCell className="font-medium">
                 <div className="flex items-center">
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarImage url={balance.token.image} />
                         <AvatarFallback>{balance.token.symbol}</AvatarFallback>
                     </Avatar>
                     <p className="px-4">{balance.token.symbol}</p>
