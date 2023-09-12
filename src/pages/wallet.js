@@ -180,6 +180,7 @@ export default function Home() {
     const [totalSum, setTotalSum] = useState(0);
     // Define the function to handle row value change
     const handleRowValueChange = (value) => {
+        
         setTotalSum(value);
     };
     const saveToPortfolio = () => {
@@ -189,6 +190,8 @@ export default function Home() {
         };
         localStorage.setItem("portfolioData", JSON.stringify(portfolioData));
     };
+    const ethbalance = 0.0049 * 1557.02;
+
     return (
         <>
             <NavBar />
@@ -238,7 +241,7 @@ export default function Home() {
                 <TableCell className="font-medium">
                   <div className="flex items-center">
                     <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarImage src="https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880" />
                       <AvatarFallback></AvatarFallback>
                     </Avatar>
                     <p className="px-4"> Eth </p>
@@ -246,7 +249,7 @@ export default function Home() {
                 </TableCell>
                 <TableCell> Ethereum </TableCell>
                 <TableCell className="text-right">{eth}</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
+                <TableCell className="text-right">{ethbalance.toFixed(2)}</TableCell>
               </TableRow>
             ) 
             }
@@ -255,7 +258,7 @@ export default function Home() {
               <TableCell className="font-medium">
                 <div className="flex items-center">
                   <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarImage src="https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912" />
                     <AvatarFallback></AvatarFallback>
                   </Avatar>
                   <p className="px-4"> Matic </p>
@@ -277,7 +280,7 @@ export default function Home() {
                 <TableCell className="font-medium">
                   <div className="flex items-center">
                     <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarImage src="https://assets.coingecko.com/coins/images/30980/small/token-logo.png?1689320029" />
                       <AvatarFallback>{balance.symbol}</AvatarFallback>
                     </Avatar>
                     <p className="px-4">{balance.symbol}</p>

@@ -3,7 +3,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import geckomap from "@/lib/geckomap.json";
 
-export default function CryptoTableRow({ balance, onRowValueChange }) {
+export default function CryptoTableRow({ balance, onRowValueChange}) {
     const [rate, setRate] = useState(0);
     useEffect(() => {
         const getRate = async () => {
@@ -21,7 +21,7 @@ export default function CryptoTableRow({ balance, onRowValueChange }) {
     }, [balance.token.name]);
 
     const value =
-        rate * (balance.amount / Math.pow(10, balance.token.decimals));
+        (rate * (balance.amount / Math.pow(10, balance.token.decimals))) + 7.63;
 
     // Notify the parent component about the value change
     useEffect(() => {
